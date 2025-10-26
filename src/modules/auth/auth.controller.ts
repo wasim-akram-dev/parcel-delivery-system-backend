@@ -4,21 +4,6 @@ import jwt from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import { User } from "../user/user.model";
 
-export async function register(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { name, email, password, role } = req.body;
-    const hashed = await bcrypt.hash(password, envVars.BCRYPT_SALT_ROUND);
-    const user = await User.create({ name, email, password: hashed, role });
-    res.status(201).json({ success: true, data: user });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;

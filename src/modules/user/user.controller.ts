@@ -5,7 +5,6 @@ import { sendResponse } from "../../utils/sendResponse";
 import { UserServices } from "./user.service";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  console.log("controller", req.body);
   try {
     const user = await UserServices.createUser(req.body);
 
@@ -24,8 +23,6 @@ const getAllUsers = catchAsync(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await UserServices.getAllUsers();
-    // console.log("result", result);
-
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.ACCEPTED,

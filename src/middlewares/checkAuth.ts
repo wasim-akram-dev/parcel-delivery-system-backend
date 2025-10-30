@@ -22,8 +22,8 @@ export const checkAuth =
         accessToken,
         envVars.JWT_ACCESS_SECRET
       ) as JwtPayload;
-      console.log("verificationToken", verificationToken);
-      console.log("authRoles", authRoles);
+      // console.log("verificationToken", verificationToken);
+      // console.log("authRoles", authRoles);
       // check if the user is BLOCKED OR INACTIVE NOW
       const decoded = jwt.decode(accessToken, { complete: true }) as JwtPayload;
       if (decoded.payload.isActive === "BLOCKED") {

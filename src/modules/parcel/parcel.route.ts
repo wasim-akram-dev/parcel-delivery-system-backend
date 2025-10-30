@@ -18,6 +18,19 @@ router.get(
   ParcelControllers.getDeliveryHistory
 );
 
+// ADMINS
+router.get(
+  "/view-all-users",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.getAllUsers
+);
+
+router.get(
+  "/view-all-parcels",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.getAllParcels
+);
+
 // View all parcels created by the sender
 router.get("/me", checkAuth(Role.SENDER), ParcelControllers.getMyParcels);
 
@@ -26,6 +39,24 @@ router.get(
   "/:id",
   checkAuth(Role.SENDER),
   ParcelControllers.getSpecificParcelDetails
+);
+
+router.patch(
+  "/update-user-role/:id",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.updateUserRole
+);
+
+router.post(
+  "/update-user-active-status",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.updateUserActiveStatus
+);
+
+router.post(
+  "/update-parcel-status",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.updateParcelStatus
 );
 
 // SENDERS

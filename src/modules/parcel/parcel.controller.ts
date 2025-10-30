@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
+import AppError from "../../utils/AppError";
 import { sendResponse } from "../../utils/sendResponse";
 import { ParcelServices } from "./parcel.service";
 
@@ -143,6 +144,101 @@ const getDeliveryHistory = async (
   }
 };
 
+// ADMINS
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await ParcelServices.getAllUsers();
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Get All Users Successfully",
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllParcels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const parcels = await ParcelServices.getAllParcels();
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "Get All Parcels Successfully",
+      data: parcels,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+    const user = await ParcelServices.updateUserRole(id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User Role Updated Successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserActiveStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.body) {
+      throw new AppError(httpStatus.NOT_FOUND, "_id, isActive status required");
+    }
+    const updatedUser = await ParcelServices.updateUserActiveStatus(req);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "User isActive status updated Successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateParcelStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.body) {
+      throw new AppError(httpStatus.NOT_FOUND, "_id, parcel_status required");
+    }
+    const updatedParcel = await ParcelServices.updateParcelStatus(req);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "parcel_status updated Successfully",
+      data: updatedParcel,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const ParcelControllers = {
   createParcel,
   cancelParcel,
@@ -151,4 +247,9 @@ export const ParcelControllers = {
   getIncomingParcels,
   confirmParcel,
   getDeliveryHistory,
+  getAllUsers,
+  getAllParcels,
+  updateUserRole,
+  updateUserActiveStatus,
+  updateParcelStatus,
 };

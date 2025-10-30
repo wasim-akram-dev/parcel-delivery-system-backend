@@ -2,6 +2,7 @@ import { Request } from "express";
 import httpStatus from "http-status-codes";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../../utils/AppError";
+import { Role } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { IParcel, ParcelStatus } from "./parcel.interface";
 import { Parcel } from "./parcel.model";
@@ -236,6 +237,96 @@ const getDeliveryHistory = async (token: string) => {
   return deliveredHistory;
 };
 
+// ADMINS
+const getAllUsers = async () => {
+  const allUsers = await User.find();
+  return allUsers;
+};
+
+const getAllParcels = async () => {
+  const allParcels = await Parcel.find()
+    .populate("senderId", "name role email phone")
+    .populate("receiverId", "name role email phone");
+  return allParcels;
+};
+
+const updateUserRole = async (id: string) => {
+  const toUpdateUserRole = await User.findById(id);
+
+  if (!toUpdateUserRole) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found for this id");
+  }
+  if (toUpdateUserRole.role === "ADMIN") {
+    throw new AppError(httpStatus.NOT_FOUND, "user already a Admin");
+  }
+
+  // set
+  toUpdateUserRole.role = Role.ADMIN;
+  const updatedUser = await User.findByIdAndUpdate(id, toUpdateUserRole, {
+    new: true,
+  });
+
+  return updatedUser;
+};
+
+const updateUserActiveStatus = async (req: Request) => {
+  console.log("req.body", req.body);
+  const toUpdateUserIsActive = await User.findById(req.body._id);
+
+  console.log("toUpdateUserisActive", toUpdateUserIsActive);
+
+  if (!toUpdateUserIsActive) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found for this _id");
+  }
+
+  // set (isactive/inactive/block) --> user jeta chabe sheta kore dibo
+  toUpdateUserIsActive.isActive = req.body.isActive;
+  const updatedUser = await User.findByIdAndUpdate(
+    req.body._id,
+    toUpdateUserIsActive,
+    {
+      new: true,
+    }
+  );
+  return updatedUser;
+};
+
+const updateParcelStatus = async (req: Request) => {
+  const foundedParcel = await Parcel.findById(req.body._id);
+
+  if (!foundedParcel) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found for this _id");
+  }
+
+  if (
+    ["Cancelled", "Returned", "Delivered"].includes(foundedParcel.parcel_status)
+  ) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `This parcel cannot be updated coz it is currently marked as "${foundedParcel.parcel_status}" now, try again`
+    );
+  }
+
+  foundedParcel.parcel_status = req.body.parcel_status;
+  // update the statusLog
+  const newStatusLog = {
+    location: "System",
+    timestamp: new Date(),
+    status: req.body.parcel_status,
+    note: `Parcel is ${req.body.parcel_status}.`,
+  };
+  foundedParcel.statusLog.push(newStatusLog);
+
+  const updatedParcel = await Parcel.findByIdAndUpdate(
+    req.body._id,
+    foundedParcel,
+    {
+      new: true,
+    }
+  );
+  return updatedParcel;
+};
+
 export const ParcelServices = {
   createParcel,
   cancelParcel,
@@ -244,4 +335,9 @@ export const ParcelServices = {
   getIncomingParcels,
   confirmParcel,
   getDeliveryHistory,
+  getAllUsers,
+  getAllParcels,
+  updateUserRole,
+  updateUserActiveStatus,
+  updateParcelStatus,
 };

@@ -82,9 +82,73 @@ const getSpecificParcelDetails = async (
   }
 };
 
+// RECEIVERS
+const getIncomingParcels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // const id = req.header;
+    const parcels = await ParcelServices.getIncomingParcels(req);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "Get Incoming Parcels Successfully",
+      data: parcels,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const confirmParcel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+    const confirmed = await ParcelServices.confirmParcel(id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.ACCEPTED,
+      message: "Parcel Confirmed Successfully",
+      data: confirmed,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDeliveryHistory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const token = req.headers.authorization;
+    const parcel = await ParcelServices.getDeliveryHistory(token as string);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Get Parcel Delivery History Successfully",
+      data: parcel,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const ParcelControllers = {
   createParcel,
   cancelParcel,
   getMyParcels,
   getSpecificParcelDetails,
+  getIncomingParcels,
+  confirmParcel,
+  getDeliveryHistory,
 };

@@ -18,14 +18,16 @@ const credentialsLogin = async (
     res.cookie("accessToken", loginInfo.accessToken, {
       httpOnly: true,
       secure: true, // use true in production (with HTTPS)
-      sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
+      // sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
+      sameSite: "none",
     });
 
     // send refresh token to the response cookies while login
     res.cookie("refreshToken", loginInfo.refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: isProduction ? "none" : "lax",
+      // sameSite: isProduction ? "none" : "lax",
+      sameSite: "none",
     });
 
     sendResponse(res, {

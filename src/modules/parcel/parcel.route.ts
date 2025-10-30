@@ -5,13 +5,19 @@ import { ParcelControllers } from "./parcel.controller";
 
 const router = Router();
 
-router.post("/", checkAuth(Role.SENDER), ParcelControllers.createParcel);
-
-router.patch(
-  "/cancel/:id",
-  checkAuth(Role.SENDER),
-  ParcelControllers.cancelParcel
+// RECEIVERS
+router.get(
+  "/incoming-parcels",
+  checkAuth(Role.RECEIVER),
+  ParcelControllers.getIncomingParcels
 );
+
+router.get(
+  "/delivery-history",
+  checkAuth(Role.RECEIVER),
+  ParcelControllers.getDeliveryHistory
+);
+
 // View all parcels created by the sender
 router.get("/me", checkAuth(Role.SENDER), ParcelControllers.getMyParcels);
 
@@ -20,6 +26,21 @@ router.get(
   "/:id",
   checkAuth(Role.SENDER),
   ParcelControllers.getSpecificParcelDetails
+);
+
+// SENDERS
+router.post("/", checkAuth(Role.SENDER), ParcelControllers.createParcel);
+
+router.patch(
+  "/cancel/:id",
+  checkAuth(Role.SENDER),
+  ParcelControllers.cancelParcel
+);
+
+router.patch(
+  "/confirm-parcel/:id",
+  checkAuth(Role.RECEIVER),
+  ParcelControllers.confirmParcel
 );
 
 export const ParcelRoutes = router;

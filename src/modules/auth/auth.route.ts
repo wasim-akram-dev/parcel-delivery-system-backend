@@ -11,4 +11,6 @@ router.post("/refresh-token", (req, res, next: NextFunction) => {
   AuthControllers.getNewAccessToken(req, res, next);
 });
 
+router.post("/logout", AuthControllers.logout);
+
 export const AuthRoutes = router;

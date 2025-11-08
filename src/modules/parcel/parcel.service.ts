@@ -11,7 +11,7 @@ const createParcel = async (req: Request, payload: Partial<IParcel>) => {
   const trackingId = "TRK" + Date.now();
   payload.trackingId = trackingId;
 
-  const token = req.headers.authorization;
+  const token = req.headers.authorization || req.cookies.accessToken;
   if (!token) {
     throw new AppError(
       httpStatus.NOT_FOUND,
@@ -103,7 +103,7 @@ const cancelParcel = async (id: string, req: Request) => {
 };
 
 const getMyParcels = async (req: Request) => {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization || req.cookies.accessToken;
 
   if (!token) {
     throw new AppError(
@@ -140,7 +140,7 @@ const getSpecificParcelDetails = async (id: string) => {
 
 // RECEIVERS
 const getIncomingParcels = async (req: Request) => {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization || req.cookies.accessToken;
   // console.log("token", token);
 
   if (!token) {

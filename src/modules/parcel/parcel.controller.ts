@@ -130,7 +130,7 @@ const getDeliveryHistory = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization || req.cookies.accessToken;
     const parcel = await ParcelServices.getDeliveryHistory(token as string);
 
     sendResponse(res, {

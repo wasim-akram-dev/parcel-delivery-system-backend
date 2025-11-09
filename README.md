@@ -70,7 +70,7 @@ src
  ├── middlewares     # Authentication & error handling
  ├── modules
  │    ├── auth       # Login, registration, JWT
- │    ├── percel     # Parcel CRUD, status updates
+ │    ├── parcel     # Parcel CRUD, status updates
  │    └── user       # User management
  ├── routes          # API route registration
  ├── utils           # Utility functions
@@ -82,7 +82,7 @@ src
 
 ## 📡 API Endpoints
 
-Base URL:
+Base URL: https://runner-courier-server.vercel.app
 
 ```
 /api/v1

@@ -1,30 +1,32 @@
 "use strict";
-// import { Router } from "express";
-// import { AuthRoutes } from "../modules/auth/auth.route";
-// import { DivisionRoutes } from "../modules/division/division.route";
-// import { TourRoutes } from "../modules/tour/tour.route";
-// import { UserRoutes } from "../modules/user/user.route";
-// export const router = Router();
-// const moduleRoutes = [
-//   {
-//     path: "/user",
-//     route: UserRoutes,
-//   },
-//   {
-//     path: "/auth",
-//     route: AuthRoutes,
-//   },
-//   {
-//     path: "/division",
-//     route: DivisionRoutes,
-//   },
-//   {
-//     path: "/tour",
-//     route: TourRoutes,
-//   },
-// ];
-// moduleRoutes.forEach((route) => {
-//   router.use(route.path, route.route);
-// });
-// // router.use("/user", UserRoutes)
-// // router.use("/tour", TourRoutes)
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
+const express_1 = require("express");
+const auth_route_1 = require("../modules/auth/auth.route");
+const parcel_route_1 = require("../modules/parcel/parcel.route");
+const user_route_1 = require("../modules/user/user.route");
+const userMe_route_1 = require("../modules/userMe/userMe.route");
+exports.router = (0, express_1.Router)();
+const moduleRoutes = [
+    {
+        path: "/user",
+        route: user_route_1.UserRoutes,
+    },
+    {
+        path: "/auth",
+        route: auth_route_1.AuthRoutes,
+    },
+    {
+        path: "/parcels",
+        route: parcel_route_1.ParcelRoutes,
+    },
+    {
+        path: "/profile",
+        route: userMe_route_1.userMe,
+    },
+];
+moduleRoutes.forEach((route) => {
+    exports.router.use(route.path, route.route);
+});
+// router.use("/user", UserRoutes)
+// router.use("/tour", TourRoutes)

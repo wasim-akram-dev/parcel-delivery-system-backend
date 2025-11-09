@@ -51,7 +51,7 @@ const cancelParcel = async (id: string, req: Request) => {
     throw new AppError(httpStatus.NOT_FOUND, "Parcel not found for this id");
   }
 
-  const token = req.headers.authorization;
+  const token = req.headers.authorization || req.cookies.accessToken;
 
   if (!token) {
     throw new AppError(httpStatus.BAD_REQUEST, "token not found");

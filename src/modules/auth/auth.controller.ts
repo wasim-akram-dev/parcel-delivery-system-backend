@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
+import { envVars } from "../../config/env";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
 
-const isProduction = process.env.NODE_ENV === "production";
+// const isProduction = process.env.NODE_ENV === "production";
 // console.log("isProduction", isProduction);
 
 const credentialsLogin = async (
@@ -20,16 +21,19 @@ const credentialsLogin = async (
     res.cookie("accessToken", loginInfo.accessToken, {
       httpOnly: true,
       secure: true, // use true in production (with HTTPS)
-      // sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
       sameSite: "none",
+      domain: envVars.FRONTEND_URL,
+      // maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      // sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
     });
 
     // send refresh token to the response cookies while login
     res.cookie("refreshToken", loginInfo.refreshToken, {
       httpOnly: true,
       secure: true,
-      // sameSite: isProduction ? "none" : "lax",
       sameSite: "none",
+      domain: envVars.FRONTEND_URL,
+      // sameSite: isProduction ? "none" : "lax",
     });
 
     sendResponse(res, {
@@ -66,7 +70,8 @@ const getNewAccessToken = async (
     res.cookie("accessToken", tokenInfo.accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "none",
+      // sameSite: isProduction ? "none" : "lax",
     });
 
     sendResponse(res, {

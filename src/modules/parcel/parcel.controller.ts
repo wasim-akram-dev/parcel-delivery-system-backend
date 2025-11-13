@@ -203,10 +203,18 @@ const updateUserActiveStatus = async (
   next: NextFunction
 ) => {
   try {
+    console.log(req.params.id, req.body);
     if (!req.body) {
-      throw new AppError(httpStatus.NOT_FOUND, "_id, isActive status required");
+      throw new AppError(httpStatus.NOT_FOUND, "isActive status required");
     }
-    const updatedUser = await ParcelServices.updateUserActiveStatus(req);
+
+    const userId = req.params.id;
+    const { isActive } = req.body;
+
+    const updatedUser = await ParcelServices.updateUserActiveStatus(
+      userId,
+      isActive
+    );
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
@@ -225,13 +233,48 @@ const updateParcelStatus = async (
 ) => {
   try {
     if (!req.body) {
-      throw new AppError(httpStatus.NOT_FOUND, "_id, parcel_status required");
+      throw new AppError(httpStatus.NOT_FOUND, "parcel_status required");
     }
-    const updatedParcel = await ParcelServices.updateParcelStatus(req);
+    console.log(req.params.id, req.body);
+    const parcelId = req.params.id;
+    const { parcel_status } = req.body;
+    const updatedParcel = await ParcelServices.updateParcelStatus(
+      parcelId,
+      parcel_status
+    );
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "parcel_status updated Successfully",
+      data: updatedParcel,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateParcelBlockStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const parcelId = req.params.id;
+    const { isBlocked } = req.body;
+
+    if (typeof isBlocked !== "boolean") {
+      throw new AppError(httpStatus.BAD_REQUEST, "isBlocked must be boolean");
+    }
+
+    const updatedParcel = await ParcelServices.updateParcelBlockStatus(
+      parcelId,
+      isBlocked
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: `Parcel ${isBlocked ? "blocked" : "unblocked"} successfully`,
       data: updatedParcel,
     });
   } catch (error) {
@@ -252,4 +295,5 @@ export const ParcelControllers = {
   updateUserRole,
   updateUserActiveStatus,
   updateParcelStatus,
+  updateParcelBlockStatus,
 };

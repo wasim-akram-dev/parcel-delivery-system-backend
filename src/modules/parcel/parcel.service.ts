@@ -2,7 +2,7 @@ import { Request } from "express";
 import httpStatus from "http-status-codes";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../../utils/AppError";
-import { Role } from "../user/user.interface";
+import { IsActive, Role } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { IParcel, ParcelStatus } from "./parcel.interface";
 import { Parcel } from "./parcel.model";
@@ -269,30 +269,42 @@ const updateUserRole = async (id: string) => {
   return updatedUser;
 };
 
-const updateUserActiveStatus = async (req: Request) => {
-  console.log("req.body", req.body);
-  const toUpdateUserIsActive = await User.findById(req.body._id);
+const updateUserActiveStatus = async (userId: string, isActive: IsActive) => {
+  const user = await User.findById(userId);
 
-  console.log("toUpdateUserisActive", toUpdateUserIsActive);
-
-  if (!toUpdateUserIsActive) {
-    throw new AppError(httpStatus.NOT_FOUND, "user not found for this _id");
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
 
-  // set (isactive/inactive/block) --> user jeta chabe sheta kore dibo
-  toUpdateUserIsActive.isActive = req.body.isActive;
-  const updatedUser = await User.findByIdAndUpdate(
-    req.body._id,
-    toUpdateUserIsActive,
-    {
-      new: true,
-    }
-  );
+  if (user.isActive === isActive) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `User is already in this ${isActive} status`
+    );
+  }
+
+  user.isActive = isActive;
+  if (isActive === IsActive.BLOCKED) {
+    user.isActive = IsActive.BLOCKED;
+  } else if (isActive === IsActive.INACTIVE) {
+    user.isActive = IsActive.INACTIVE;
+  } else {
+    user.isActive = IsActive.ACTIVE;
+  }
+
+  // await user.save();
+
+  const updatedUser = await User.findByIdAndUpdate(userId, user, {
+    new: true,
+  });
   return updatedUser;
 };
 
-const updateParcelStatus = async (req: Request) => {
-  const foundedParcel = await Parcel.findById(req.body._id);
+const updateParcelStatus = async (
+  parcelId: string,
+  parcel_status: ParcelStatus
+) => {
+  const foundedParcel = await Parcel.findById(parcelId);
 
   if (!foundedParcel) {
     throw new AppError(httpStatus.NOT_FOUND, "user not found for this _id");
@@ -307,24 +319,56 @@ const updateParcelStatus = async (req: Request) => {
     );
   }
 
-  foundedParcel.parcel_status = req.body.parcel_status;
+  foundedParcel.parcel_status = parcel_status;
   // update the statusLog
   const newStatusLog = {
     location: "System",
     timestamp: new Date(),
-    status: req.body.parcel_status,
-    note: `Parcel is ${req.body.parcel_status}.`,
+    status: parcel_status,
+    note: `Parcel is ${parcel_status}.`,
   };
   foundedParcel.statusLog.push(newStatusLog);
 
   const updatedParcel = await Parcel.findByIdAndUpdate(
-    req.body._id,
+    parcelId,
     foundedParcel,
     {
       new: true,
     }
   );
   return updatedParcel;
+};
+
+const updateParcelBlockStatus = async (
+  parcelId: string,
+  isBlocked: boolean
+) => {
+  const parcel = await Parcel.findById(parcelId);
+  if (!parcel) {
+    throw new AppError(httpStatus.NOT_FOUND, "Parcel not found for this ID");
+  }
+
+  // Optional rule: Prevent blocking delivered or cancelled parcels
+  if (["Delivered", "Cancelled"].includes(parcel.parcel_status)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Cannot block a parcel with status "${parcel.parcel_status}".`
+    );
+  }
+
+  parcel.isBlocked = isBlocked;
+
+  // Add a note in status log
+  const newStatusLog = {
+    location: "System",
+    timestamp: new Date(),
+    status: parcel.parcel_status,
+    note: isBlocked ? "Parcel has been blocked." : "Parcel has been unblocked.",
+  };
+  parcel.statusLog.push(newStatusLog);
+
+  await parcel.save();
+  return parcel;
 };
 
 export const ParcelServices = {
@@ -340,4 +384,5 @@ export const ParcelServices = {
   updateUserRole,
   updateUserActiveStatus,
   updateParcelStatus,
+  updateParcelBlockStatus,
 };

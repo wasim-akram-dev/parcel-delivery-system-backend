@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthControllers = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const env_1 = require("../../config/env");
 const AppError_1 = __importDefault(require("../../utils/AppError"));
 const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
@@ -29,7 +28,6 @@ const credentialsLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             httpOnly: true,
             secure: true, // use true in production (with HTTPS)
             sameSite: "none",
-            domain: env_1.envVars.FRONTEND_URL,
             // maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             // sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
         });
@@ -38,7 +36,6 @@ const credentialsLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            domain: env_1.envVars.FRONTEND_URL,
             // sameSite: isProduction ? "none" : "lax",
         });
         (0, sendResponse_1.sendResponse)(res, {
@@ -83,13 +80,13 @@ const getNewAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 const logout = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
     });
     (0, sendResponse_1.sendResponse)(res, {
         success: true,

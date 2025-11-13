@@ -47,16 +47,22 @@ router.patch(
   ParcelControllers.updateUserRole
 );
 
-router.post(
-  "/update-user-active-status",
+router.patch(
+  "/update-user-active-status/:id",
   checkAuth(Role.ADMIN),
   ParcelControllers.updateUserActiveStatus
 );
 
-router.post(
-  "/update-parcel-status",
+router.patch(
+  "/update-parcel-status/:id",
   checkAuth(Role.ADMIN),
   ParcelControllers.updateParcelStatus
+);
+
+router.patch(
+  "/update-parcel-block/:id",
+  checkAuth(Role.ADMIN),
+  ParcelControllers.updateParcelBlockStatus
 );
 
 // SENDERS

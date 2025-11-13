@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
-import { envVars } from "../../config/env";
 import AppError from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
@@ -22,7 +21,6 @@ const credentialsLogin = async (
       httpOnly: true,
       secure: true, // use true in production (with HTTPS)
       sameSite: "none",
-      domain: envVars.FRONTEND_URL,
       // maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       // sameSite: isProduction ? "none" : "lax", // important when frontend & backend are on different domains
     });
@@ -32,7 +30,6 @@ const credentialsLogin = async (
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: envVars.FRONTEND_URL,
       // sameSite: isProduction ? "none" : "lax",
     });
 
@@ -89,13 +86,13 @@ const logout = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
 
     sendResponse(res, {

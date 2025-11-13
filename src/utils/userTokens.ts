@@ -13,6 +13,8 @@ export const createUserTokens = (user: Partial<IUser>) => {
     email: user.email,
     role: user.role,
     isActive: user.isActive,
+    name: user.name,
+    picture: user.picture,
   };
 
   // accessToken assign

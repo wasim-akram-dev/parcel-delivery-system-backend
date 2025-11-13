@@ -20,7 +20,7 @@ export interface ITrackingEvent {
 }
 
 export interface IParcel {
-  trackingId?: string;
+  trackingId: string;
   phone: string;
 
   sender_email: string;

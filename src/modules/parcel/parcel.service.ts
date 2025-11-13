@@ -371,6 +371,21 @@ const updateParcelBlockStatus = async (
   return parcel;
 };
 
+const getParcelByTrackingId = async (trackingId: string) => {
+  const parcel = await Parcel.findOne({ trackingId })
+    .populate("senderId", "name email role")
+    .populate("receiverId", "name email role");
+
+  if (!parcel) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Parcel not found with this tracking ID"
+    );
+  }
+
+  return parcel;
+};
+
 export const ParcelServices = {
   createParcel,
   cancelParcel,
@@ -385,4 +400,5 @@ export const ParcelServices = {
   updateUserActiveStatus,
   updateParcelStatus,
   updateParcelBlockStatus,
+  getParcelByTrackingId,
 };

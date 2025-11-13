@@ -282,6 +282,32 @@ const updateParcelBlockStatus = async (
   }
 };
 
+const getParcelByTrackingId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { trackingId } = req.params;
+
+    if (!trackingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Tracking ID is required",
+      });
+    }
+    const result = await ParcelServices.getParcelByTrackingId(trackingId);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Parcel tracking information retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const ParcelControllers = {
   createParcel,
   cancelParcel,
@@ -296,4 +322,5 @@ export const ParcelControllers = {
   updateUserActiveStatus,
   updateParcelStatus,
   updateParcelBlockStatus,
+  getParcelByTrackingId,
 };

@@ -16,10 +16,8 @@ export const statusLogs = new Schema<ITrackingEvent>(
 
 export const parcelSchema = new Schema<IParcel>(
   {
-    trackingId: { type: String },
-    // sender mail, receiver mail padhabo --> response e padhabo senderIn, receiverId from token -> s
-    // ender r mail diye db theke data ene shei sender id add kore dibo, receiver r mail diye dekhbo ai db te
-    // ai user ache naki thakle receiver mail diye tar id ber kore boshiye dibo receiverId te
+    trackingId: { type: String, required: true },
+
     sender_email: { type: String, required: true },
     receiver_email: { type: String, required: true },
 

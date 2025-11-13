@@ -80,4 +80,6 @@ router.patch(
   ParcelControllers.confirmParcel
 );
 
+router.get("/track/:trackingId", ParcelControllers.getParcelByTrackingId);
+
 export const ParcelRoutes = router;

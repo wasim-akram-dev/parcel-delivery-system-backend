@@ -228,7 +228,9 @@ const getDeliveryHistory = async (token: string) => {
 
   const deliveredHistory = await Parcel.find({
     receiverId: decodedToken.payload.userId,
-    parcel_status: { $ne: "Requested" },
+    parcel_status: { $in: [ParcelStatus.Delivered] },
+    // parcel_status: { $ne: "Requested" },
+    // parcel_status: { $eq: "Delivered" },
   });
   if (!deliveredHistory) {
     throw new AppError(httpStatus.NOT_FOUND, "No parcels are found");
